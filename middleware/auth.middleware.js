@@ -6,18 +6,19 @@ export const protectRoute = async (req, res, next) => {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return res.status(401).json({
-        status: "Error",
-        message: "Unauthorized - No token provided"
+        status: "Error", 
+        message: "Unauthorized - No token provided" 
       });
     }
-
+    //Bearer eycugdjgslgbclvkngrs
     const token = authHeader.split(" ")[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    // console.log(decoded);
     const user = await User.findById(decoded.userId).select("-password");
 
     if (!user) {
       return res.status(401).json({
-        status: "Error",
+        status: "Error", 
         message: "Unauthorized - User not found"
       });
     }
@@ -25,26 +26,12 @@ export const protectRoute = async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
-    console.error("JWT Error:", error); // log actual error
-    res.status(401).json({
-      status: "Error",
-      message: "Unauthorized - Invalid Token"
+    res.status(500).json({
+      status: "Error", 
+      message: "Unauthorized - Invalid Token" 
     });
   }
 };
-
-
-    req.user = user;
-    next();
-  } catch (error) {
-    console.error("JWT Error:", error); // log actual error
-    res.status(401).json({
-      status: "Error",
-      message: "Unauthorized - Invalid Token"
-    });
-  }
-};
-
 
 export const isTeacher = async (req, res, next) => {
   if (req.user?.role !== "teacher") {
@@ -54,5 +41,3 @@ export const isTeacher = async (req, res, next) => {
   }
   next();
 };
-
-
